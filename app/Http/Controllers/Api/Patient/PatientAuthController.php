@@ -125,7 +125,7 @@ class PatientAuthController extends Controller
             DB::table('user_activations')->insert(['id_user'=>$user['id'],'token'=>$user['link']]);
             Mail::send('emails.patient-activation', $user, function($message) use ($user){
                 $message->to($user['email']);
-                $message->subject('esptaila - Activation Code');
+                $message->subject('esptalia - Activation Code');
             });
           if(isset($request->lang)  && $request -> lang == 'en' ){
                 return $this -> returnSuccessMessage('Please visit your email to activate the account ');
@@ -170,14 +170,26 @@ class PatientAuthController extends Controller
                 // $ss=bcrypt($request->old_password);
                 //  dd($ss);
                 if ((Hash::check(request('old_password'), $userid->password)) == false) {
-                    $arr = array("status" => 400, "message" => "Check your old password.", "data" => array());
+                    if(isset($request->lang)  && $request -> lang == 'en' ){
+                        $arr = array("status" => 400, "message" => "Check your old password.", "data" => array());
+                    } else {
+                        $arr = array("status" => 400, "message" => "تحقق من كلمة السر القديمة.", "data" => array());
+                    }     
                 } else if ((Hash::check(request('new_password'), $request->password)) == true) {
-                    $arr = array("status" => 400, "message" => "Please enter a password which is not similar then current password.", "data" => array());
-                } else {
-                     $userid->password  = Hash::make($input['new_password']);
+                    if(isset($request->lang)  && $request -> lang == 'en' ){
+                        $arr = array("status" => 400, "message" => "Please enter a password which is not similar then current password.", "data" => array());
+                    } else {
+                        $arr = array("status" => 400, "message" => "الرجاء إدخال كلمة مرور لا تشبه كلمة المرور الحالية.", "data" => array());
+                    }   
+
+                } else {                     
+                     $userid->password  = bcrypt($input['new_password']);
                      $userid->save();
-                    // Patient::where('id', $userid)->update(['password' => Hash::make($input['new_password'])]);
-                    $arr = array("status" => 200, "message" => "Password updated successfully.", "data" => $userid);
+                    if(isset($request->lang)  && $request -> lang == 'en' ){
+                        $arr = array("status" => 200, "message" => "Password updated successfully.", "data" => $userid);
+                    } else {
+                        $arr = array("status" => 200, "message" => "تم تحديث كلمة السر بنجاح.", "data" => $userid);
+                    }    
                 }
             } catch (\Exception $ex) {
                 if (isset($ex->errorInfo[2])) {
@@ -202,6 +214,7 @@ class PatientAuthController extends Controller
     
      public function forgetPassword(Request $request)
     {
+        
         $input = $request->all();
         $rules = array(
             'email' => "required|email",
@@ -215,8 +228,8 @@ class PatientAuthController extends Controller
             $arr = array("status" => 400, "message" => $validator->errors()->first(), "data" => array());
         } else {
             try {
-                 $doctorss= Patient::where('email',$request->email)->first();
-                if($doctorss==null){
+                 $patients= Patient::where('email',$request->email)->first();
+                if($patients==null){
                     if(isset($request->lang)  && $request -> lang == 'en' ){
                          return $this -> returnError('001','Email not found ');
                     }else{
@@ -224,19 +237,35 @@ class PatientAuthController extends Controller
                     }
                 }else{
                     // $user->registartionId = str_rand(6 only digit)->unique;
+                    // $gene = mt_rand(1000000000, 9999999999);
+                    // $patients->password = bcrypt($gene);
+                    // $patients->save();
+                    // $details = [
+                    //     'title' => 'Password of Esptalia',
+                    //     'body' => 'cope this password to enter Esptalia ' ." " . $gene . " "
+                    // ];
+                    // \Mail::to($request->email)->send(new \App\Mail\MyTestMail($details));
                     $gene = mt_rand(1000000000, 9999999999);
-                    $doctorss->password = bcrypt($gene);
+                    $patients->password = bcrypt($gene);
                     // str_rand(8)->make_bcrypt->unique;
-                    $doctorss->save();
+                    $patients->save();
                     // dd($doctorss);
-                    $details = [
-                        'title' => 'Password of Esptalia',
-                        'body' => 'cope this password to enter Esptalia ' ." " . $gene . " "
-                    ];
+                    // $details = [
+                    //     'title' => 'Password of Esptalia',
+                    //     'body' => 'cope this password to enter Esptalia ' ." " . $gene . " "
+                    // ];
+                    
+                   $user = $patients->toArray();
+                   $user['passwordgenerat'] =  mt_rand(1000000000, 9999999999);
+                    Mail::send('emails.forgot', $user, function($message) use ($user){
+                        $message->to($user['email']);
+                        $message->subject('esptaila - New password');
+                    });
                    
-                    \Mail::to($request->email)->send(new \App\Mail\MyTestMail($details));
                    
                     // dd("Email is Sent.");
+
+
 
                     if(isset($request->lang)  && $request -> lang == 'en' ){
                          return $this -> returnSuccessMessage('Please visit your email ');

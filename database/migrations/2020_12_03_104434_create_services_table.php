@@ -16,10 +16,15 @@ class CreateServicesTable extends Migration
         Schema::create('services', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('doctorId');
-            $table->foreign('doctorId')->references('id')->on('doctors');
-            $table->string('services_name')->nullable();
+            $table->foreign('doctorId')->references('id')->on('doctors')->onDelete('cascade');
+            $table->string('services_name_ar')->nullable();
+            $table->string('services_name_en')->nullable();
+
             $table->integer('price')->nullable();
             $table->string('type')->nullable();
+            $table->integer('status')->default(1);
+            $table->string('duration')->nullable();
+
             $table->text('icon')->nullable();
             $table->timestamps();
         });

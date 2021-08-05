@@ -95,78 +95,68 @@ class ProfileController extends Controller
     
     public function updateSettings(Request $request)
     {
-         // $userId = 1;
-         $edit = ContactInfo::findOrFail($request->id);
-         
-         if($file=$request->file('logo'))
-         {
+        // $edit = ContactInfo::findOrFail($request->id);  
+        $edit = ContactInfo::first();
+       
+        if($file=$request->file('logo'))
+        {
             $file_extension = $request -> file('logo') -> getClientOriginalExtension();
             $file_name = time().'.'.$file_extension;
             $file_nameone = $file_name;
             $path = 'assets_admin/img/settings';
             $request-> file('logo') ->move($path,$file_name);
             $edit->logo  = $file_nameone;
-         }else{
+        }else{
             $edit->logo  = $request->url; 
-         }
+        }
 
-         if($file=$request->file('favicon'))
-         {
+        if($file=$request->file('favicon'))
+        {
             $file_extension2 = $request -> file('favicon') -> getClientOriginalExtension();
             $file_name2 = time().'.'.$file_extension2;
             $file_nameone2 = $file_name2;
             $path2 = 'assets_admin/img/settings';
             $request-> file('favicon') ->move($path2,$file_name2);
             $edit->favicon  = $file_nameone2;  
-         }else{
+        }else{
             $edit->favicon  = $request->url2;
-         }
-        if($file=$request->file('vesion_image'))
-         {
-            $file_extension3= $request -> file('vesion_image') -> getClientOriginalExtension();
-            $file_name3 = time().'.'.$file_extension3;
-            $file_nameone3 = $file_name3;
-            $path3 = 'assets_admin/img/settings';
-            $request-> file('vesion_image') ->move($path3,$file_name3);
-            $edit->vesion_image  = $file_nameone3;   
-         }else{
-            $edit->vesion_image  = $request->url3;
         }
-        if($file=$request->file('mesion_image'))
-         {
-            $file_extension4 = $request -> file('mesion_image') -> getClientOriginalExtension();
-            $file_name4 = time().'.'.$file_extension4;
-            $file_nameone4 = $file_name4;
-            $path4 = 'assets_admin/img/settings';
-            $request-> file('mesion_image') ->move($path4,$file_name4);
-            $edit->mesion_image  = $file_nameone4;
-         }else{
-            $edit->mesion_image  = $request->url4;
-         }
+        $edit->title_ar  = $request->title_ar;
+        $edit->title_en  = $request->title_en;
+        $edit->description_ar  = $request->description_ar;
+        $edit->description_en  = $request->description_en;
+        $edit->version  = $request->version;
+        $edit->save();
+        return redirect('settings')->with("message", 'تم التعديل بنجاح'); 
+    }
 
-         $edit->title_ar  = $request->title_ar;
-         $edit->title_en  = $request->title_en;
+    public function updateContactData(Request $request)
+    {
+         // $userId = 1;
+         $edit = ContactInfo::first();
+         
+
          $edit->phone  = $request->phone;
          $edit->email  = $request->email;
          $edit->address_ar  = $request->address_ar;
          $edit->address_en  = $request->address_en;
-         $edit->location  = $request->location;
-         $edit->mesion_ar  = $request->mesion_ar;
-         $edit->mesion_en  = $request->mesion_en;
-         $edit->vesion_ar  = $request->vesion_ar;
-         $edit->vesion_en  = $request->vesion_en;
-         $edit->description_ar  = $request->description_ar;
-         $edit->description_en  = $request->description_en;
-         $edit->version  = $request->version;
-         
+         $edit->longitude  = $request->longitude;
+         $edit->latitude  = $request->latitude;
          $edit->save();
-
-
-        // $category = Speciality::findOrFail($request->id);
-
-        // $category->update($request->all());
        
-        return redirect('settings')->with("message", 'تم التعديل بنجاح'); 
+        return back()->with("message", 'تم التعديل بنجاح'); 
+    }
+
+
+       public function updatePrivacy(Request $request)
+    {
+        // $userId = 1;
+        // $edit = ContactInfo::findOrFail($request->id);
+        $edit = ContactInfo::first();
+         $edit->privacy_ar  = $request->privacy_ar;        
+         $edit->privacy_en  = $request->privacy_en;
+         $edit->save();       
+        return back()->with("message", 'تم التعديل بنجاح'); 
     }
 
     public function destroy(Request $request )

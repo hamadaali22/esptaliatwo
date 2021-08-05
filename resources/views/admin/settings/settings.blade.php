@@ -45,15 +45,23 @@
 								                                @csrf
 											<input type="hidden" name="id" value="{{Auth::user()->id}}">
 											<div class="form-group">
-												<label>title</label>
-												<input type="text" name="title" class="form-control" value="{{$contactInfo->title}}">
+												<label>العنوان العربي</label>
+												<input type="text" name="title_ar" class="form-control" value="{{$contactInfo->title_ar}}">
 											</div>
 											<div class="form-group">
-												<label>description</label>
-												<input type="text" name="description" class="form-control" value="{{$contactInfo->description}}">
+												<label>العنوان انجليزي</label>
+												<input type="text" name="title_en" class="form-control" value="{{$contactInfo->title_en}}">
+											</div>
+											<div class="form-group">
+												<label>الوصف عربي</label>
+												<input type="text" name="description_ar" class="form-control" value="{{$contactInfo->description_ar}}">
+											</div>	
+											<div class="form-group">
+												<label>الوصف انجليزي</label>
+												<input type="text" name="description_en" class="form-control" value="{{$contactInfo->description_en}}">
 											</div>											
 											<div class="form-group">
-												<label>version</label>
+												<label>الاصدار</label>
 												<input type="number" name="version" class="form-control" value="{{$contactInfo->version}}">
 											</div>														
 											<div class="form-group row">
@@ -61,7 +69,7 @@
 													<img class="avatar-img" src="{{asset('assets_admin/img/settings/'.$contactInfo->logo) }}" alt="Speciality" width="120" height="100">
 												</div>
 												<div class="col-md-10">
-													<label>logo</label>
+													<label>الشعار</label>
 													<input type="file" name="logo" class="form-control">						
 													<input type="hidden" name="url" value="{{$contactInfo->logo}}">	
 												</div>												

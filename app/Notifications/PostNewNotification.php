@@ -20,13 +20,7 @@ class PostNewNotification extends Notification
     {
         //
     }
-
-    /**
-     * Get the notification's delivery channels.
-     *
-     * @param  mixed  $notifiable
-     * @return array
-     */
+    
     public function via($notifiable)
     {
         return ['database'];
@@ -37,7 +31,7 @@ class PostNewNotification extends Notification
         return[
             'id'=>1,
             'title'=>'this is first post',
-            'data'=>'10/10/2010'
+            'data'=>'12/12/2010'
         ];
     }   
     // public function toMail($notifiable)

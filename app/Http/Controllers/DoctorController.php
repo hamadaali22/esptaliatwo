@@ -132,11 +132,7 @@ class DoctorController extends Controller
         );
          $checkemail = Doctor::where("email" , $request->email)->first();
         if($checkemail){
-            if(isset($request->lang)  && $request -> lang == 'en' ){
-                return $this -> returnError('001','Email already exists');
-            }else{
-                return $this -> returnError('001','البريد الإلكتروني موجود مسبقا');
-            }
+            return redirect()->back()->with("error", 'البريد الإلكتروني موجود مسبقا'); 
         }else{
         $add = new Doctor();
          if($file=$request->file('photo'))
@@ -201,6 +197,8 @@ class DoctorController extends Controller
                 'services_name_ar'  => "استشارة فيديو",
                 'services_name_en'  => "Video consulting",
                 'price'  => 3,
+                'icon' => 'video.jpeg',
+                'duration'=>15,
                 'type'  => "Video",
             ];
             $reavel=[
@@ -208,6 +206,8 @@ class DoctorController extends Controller
                 'services_name_ar'  => "كشف ف العيادة",
                 'services_name_en'  => "Examination in the clinic",
                 'price'  => 3,
+                'icon' => 'reavl.png',
+                'duration'=>15,
                 'type'  => "reavel",
             ];   
             $serv1 = Service::create($video);
@@ -253,8 +253,6 @@ class DoctorController extends Controller
                 'last_name_ar'=>'required',
 
                 'last_name_en'=>'required',
-                'email'=>'required',
-                'password'=>'required',
                 'mobile'=>'required',
 
                 'address_ar'=>'required',
@@ -270,7 +268,7 @@ class DoctorController extends Controller
                 'degree_en'=>'required',
                 'yearOfRegistration'=>'required',
                 'bankNumber'=>'required',
-                'photo' => 'required|max:10000|mimes:jpeg,jpg,png,gif|',
+                // 'photo' => 'required|max:10000|mimes:jpeg,jpg,png,gif|',
                 // 'university_degree' => 'required|max:10000|mimes:pdf|',
                 // 'practice_certificate' => 'required|max:10000|mimes:pdf|',
                 // 'photo' => 'required|max:10000|mimes:jpeg,jpg,png,gif|',
@@ -289,9 +287,6 @@ class DoctorController extends Controller
                 'last_name_ar.required'=>'يرجي ادخال الثانى بالعربي ',
                 'last_name_en.required'=>' يرجى ادخال الاسم الثاني بالانجليزي',
 
-
-                'email.required'=>'البريد الالكتروني مطلوب ',
-                'password.required'=>'يرجى ادخال كلمة المرور ',
                 'mobile.required'=>' الموبايل مطلوب',
                 'address_ar.required'=>'العنوان عربي مطلوب',
 
@@ -308,7 +303,7 @@ class DoctorController extends Controller
                 'yearOfRegistration.required'=>'سنة التتسجيل',
                 'bankNumber.required'=>'اكتب رقم الحساب البنكي',
                 'specialityId.required'=>'يرجى اختيار تخصص ',
-                'photo.required'=>' يرجي إختيار صروة jpeg,jpg,png,gif ',
+                // 'photo.required'=>' يرجي إختيار صروة jpeg,jpg,png,gif ',
                 // 'university_degree.required'=>' يرجي إختيار ملف pdf ',
                 // 'practice_certificate.required'=>' يرجي إختيار ملف pdf',
 
@@ -340,7 +335,7 @@ class DoctorController extends Controller
             $edit->university_degree  = $edit->university_degree ;
          }
         if($fil3=$request->file('practice_certificate'))
-         {
+        {
             $file3 = $request->file('practice_certificate');
             $file_nameone3 = time() . '.' . $request->file('practice_certificate')->extension();
             $filePath3 ='assets_admin/img/doctors/certificate';
@@ -351,15 +346,15 @@ class DoctorController extends Controller
             $edit->practice_certificate  = $edit->practice_certificate;
         }
         if($file4=$request->file('other_qualification'))
-         {
+        {
             $file4 = $request->file('other_qualification');
             $file_nameone4 = time() . '.' . $request->file('other_qualification')->extension();
             $filePath4 =  'assets_admin/img/doctors/qualification';
             $file4->move($filePath4, $file_nameone4);
             $edit->other_qualification  = $file_nameone4;
-         }else{
+        }else{
             $edit->other_qualification  = $edit->other_qualification;
-         }
+        }
 
         if($request->specialityDesc_ar){
             $edit->specialityDesc_ar  = $request->specialityDesc_ar;  
@@ -529,7 +524,74 @@ class DoctorController extends Controller
        $user = Doctor::findOrFail($request->user_id);
         $user->status = $request->status;
         $user->save();
+        if($request->status=='1'){
+        $SERVER_API_KEY = 'AAAA12iRXek:APA91bHSmMEKt_Vi3RamfrBtk5R6p6hN5w0qsj5NotG5Xa5ttX1TudSPZLHBiUEXV4jKQ6CZBb1Cm_142nJroxyVU-3LRfQUYyz2ainfRFqIOdf1srFSU5RTsIgcI1LT1TtWPNf5TwXZ';
+            
+            $token_1 = $user->device_token;
+            $message='' ;
+            if(isset($request->lang)  && $request -> lang == 'en' ){
+                $message= 'The account has been activated to appear in the patient app ';
+            }else{
+                $message='تم تفعيل الحساب للظهور ف تطبيق المريض';
+            }
+            $data = [
+                "registration_ids" => [
+                    $token_1
+                ],
+                "notification" => [
+                    "title" => 'Espitalia',
+                    "body" => $message,
+                    "sound"=> "default" // required for sound on ios
+                ],
+            ];
 
+            $dataString = json_encode($data);
+            $headers = [
+                'Authorization: key=' . $SERVER_API_KEY,
+                'Content-Type: application/json',
+            ];
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
+            $response = curl_exec($ch);
+        }else{
+             $SERVER_API_KEY = 'AAAA12iRXek:APA91bHSmMEKt_Vi3RamfrBtk5R6p6hN5w0qsj5NotG5Xa5ttX1TudSPZLHBiUEXV4jKQ6CZBb1Cm_142nJroxyVU-3LRfQUYyz2ainfRFqIOdf1srFSU5RTsIgcI1LT1TtWPNf5TwXZ';
+            $token_1 = $user->device_token;
+            $message='' ;
+            if(isset($request->lang)  && $request -> lang == 'en' ){
+                $message= 'Your account has been canceled from the patient app ';
+            }else{
+                $message='تم إلغاء ظهور حسابك ف تطبيق المريض';
+            }
+            $data = [
+                "registration_ids" => [
+                    $token_1
+                ],
+                "notification" => [
+                    "title" => 'Espitalia',
+                    "body" => $message,
+                    "sound"=> "default" // required for sound on ios
+                ],
+            ];
+
+            $dataString = json_encode($data);
+            $headers = [
+                'Authorization: key=' . $SERVER_API_KEY,
+                'Content-Type: application/json',
+            ];
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
+            $response = curl_exec($ch);
+        }        
         return response()->json(['message' => 'User status updated successfully.']);
 
 
@@ -569,24 +631,22 @@ class DoctorController extends Controller
                                         'reviews','payment','sum','articles','appointments','specialities'));
     }
 
-
-
     public function changePassword(Request $request){
         $doctor=Doctor::where('id',$request->doctorId)->first();
         // dd($patient->password);
         $this->validate($request, [
-            'current-password'     => 'required',
+            // 'current-password'     => 'required',
             'new-password'     => 'required',
             // 'confirm_password' => 'required|same:new_password',
         ]);
         // dd('ugutg');
-        if (!(Hash::check($request->get('current-password'), $doctor->password))) {
-            return redirect()->back()->with("error","كلمة المرور الحالية لا تتطابق مع كلمة المرور التي قدمتها. حاول مرة اخرى.");
-        }
+        // if (!(Hash::check($request->get('current-password'), $doctor->password))) {
+        //     return redirect()->back()->with("error","كلمة المرور الحالية لا تتطابق مع كلمة المرور التي قدمتها. حاول مرة اخرى.");
+        // }
 
-        if(strcmp($request->get('current-password'), $request->get('new-password')) == 0){
-            return redirect()->back()->with("error","لا يمكن أن تكون كلمة المرور الجديدة هي نفسها كلمة مرورك الحالية. الرجاء اختيار كلمة مرور مختلفة.");
-        }
+        // if(strcmp($request->get('current-password'), $request->get('new-password')) == 0){
+        //     return redirect()->back()->with("error","لا يمكن أن تكون كلمة المرور الجديدة هي نفسها كلمة مرورك الحالية. الرجاء اختيار كلمة مرور مختلفة.");
+        // }
 
         $doctor->password = bcrypt($request->get('new-password'));
         $doctor->save();
@@ -603,6 +663,29 @@ class DoctorController extends Controller
         
         // return view('admin.pdf.demo',compact('data'));
     }
+
+    public function getnots( $id)
+    {
+        
+        $user = Doctor::findOrFail($id);
+         
+        // View('admin.doctors.pdf',compact('docid'));
+        // $user = Doctor::find(98);;
+        $notf=[];
+        foreach ($user->notifications as $not) {
+            
+            $notf=$not->notifications;
+
+        }
+        
+        foreach ($user->unreadnotifications as $not) {
+            $not->markAsRead();
+        }
+        return redirect()->back(); 
+
+
+    }
+
     //  public function AddApointment(Request $request)
     // {
         
@@ -657,37 +740,61 @@ class DoctorController extends Controller
 
 
 
+     
      public function AddApointment(Request $request)
     {
+        
+
+
+
+        
+        $timeHours = "7:00 PM";//change it to 8:00 PM,9:00 PM,10:00 PM  it works
+        $time = Carbon::parse($timeHours)->format('H');
+
+
+        $request['time'] = $time;
+        $validator = Validator::make($request->all(), [
+            'time' => ['required','integer','between:20,22']
+        ]);
+
+
+         if ($validator->fails()) {
+            dd($validator->errors());
+        }
+
+
+
         
         $this->validate( $request,[          
                 'from_date'=>'required',
                 'to_date'=>'required',
                 'day'=>'required',
                 'day_number'=>'required',
-                // 'from_morning'=>'required',
-                // 'to_morning'=>'required',
-                // 'from_afternoon'=>'required',
-                // 'to_afternoon'=>'required',
-                // 'from_evening'=>'required',
-                // 'to_evening'=>'required',
+                'from_morning'=>'between:11:59,01',
+                'to_morning'=>'between:11:59,01',
+                'from_afternoon'=>'between:16,12',
+                'to_afternoon'=>'between:16,12',
+                'from_evening'=>'between:24,13',
+                'to_evening'=>'between:24,13',
                 'duration'=>'required',
             ],
             [
                 'from_date.required'=>'تاريخ بداية الفتره مطلوب',
                 'to_date.required'=>' تاريخ نهاية الفترة مطلوب ',
                 'day.required'=>' ادخل ايام العمل',
-                // 'from_morning.required'=>' ادخل موعد الفتره الصباحيه  ',
-                // 'to_morning.required'=>'  ادخل موعد الفتره الصباحيه  ',
-                // 'from_afternoon.required'=>'  ادخل موعد الفتره بعد الظهر ',
-                // 'to_afternoon.required'=>'  ادخل موعد الفتره بعد الظهر  ',
-                // 'from_evening.required'=>'  ادخل موعد الفتره المسائية ',
-                // 'to_evening.required'=>'  ادخل موعد الفتره المسائية ',
+                
+                'frommorning.between'=>' يجب ان لا يقل ١٢ صباحا ولا يزيد عن ١٢ مساء',
+                'tomorning.between'=>' يجب ان لا يقل ١٢ صباحا ولا يزيد عن ١٢ مساء',
+                'fromafternoon.between'=>'  يجب ان لا يقل عن الثانية عشر مساء ولا يزيد عن البراعة عشر مساء ',
+                'toafternoon.between'=>'  يجب ان لا يقل عن الثانية عشر مساء ولا يزيد عن البراعة عشر مساء ',
+                'fromevening.between'=>' يجب ان لا يقل عن الرابعة مساء ولا يزيد عن ١٢ صباحا ',
+                'toevening.between'=>' يجب ان لا يقل عن الرابعة مساء ولا يزيد عن ١٢ صباحا',
+                
                 'duration.required'=>' ادخل مدة الكشف ',   
             ]
         );
 
-
+        dd($request->all());
         $from_date = $request->input("from_date");
         $to_date = $request->input("to_date");
 
@@ -734,10 +841,6 @@ class DoctorController extends Controller
 
 
 
-
-
-
-
     public function deleteApointment(Request $request )
     {
         $delete = WorkingDays::findOrFail($request->id);
@@ -745,11 +848,28 @@ class DoctorController extends Controller
         return redirect()->back()->with("message",'تم الحذف بنجاح');
     } 
 
-     public function updateApointment(Request $request)
-    {
-        
+    public function updateApointment(Request $request)
+    {   
+        $this->validate( $request,[            
+                'from_morning'=>'required',
+                'to_morning'=>'required',
+                'from_afternoon'=>'required',
+                'to_afternoon'=>'required',
+                'from_evening'=>'required',
+                'to_evening'=>'required',
+                
+            ],
+            [
+                'from_morning.required'=>' ادخل موعد الفتره الصباحيه  ',
+                'to_morning.required'=>'  ادخل موعد الفتره الصباحيه  ',
+                'from_afternoon.required'=>'  ادخل موعد الفتره بعد الظهر ',
+                'to_afternoon.required'=>'  ادخل موعد الفتره بعد الظهر  ',
+                'from_evening.required'=>'  ادخل موعد الفتره المسائية ',
+                'to_evening.required'=>'  ادخل موعد الفتره المسائية ',
+            ]
+        );
        $edit = WorkingDays::findOrFail($request->id);
-        $edit->day  = $request->day;
+        // $edit->day  = $request->day;
         $edit->from_morning  = $request->from_morning;
         $edit->to_morning  = $request->to_morning;
         $edit->from_afternoon  = $request->from_afternoon;
@@ -822,8 +942,13 @@ class DoctorController extends Controller
 
     public function updateService(Request $request)
     {
-
-
+        $this->validate( $request,[            
+                'price'=>'required',                
+            ],
+            [
+                'price.required'=>' يرجى ادخلا السعر  ',   
+            ]
+        );
         $edit = Service::findOrFail($request->id);
         // $edit->doctorId  = $request->doctorId;
         $edit->price  = $request->price;

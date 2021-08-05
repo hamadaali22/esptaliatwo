@@ -71,10 +71,10 @@
 										<a class="nav-link " data-toggle="tab" href="#per_details_tab">من أنا</a>
 									</li>
 									<li class="nav-item">
-										<a class="nav-link active" data-toggle="tab" href="#password_tab"> كلمة المرور </a>
+										<a class="nav-link " data-toggle="tab" href="#password_tab"> كلمة المرور </a>
 									</li>
 									<li class="nav-item">
-										<a class="nav-link " data-toggle="tab" href="#booking_apointment_tab">مواعيدي</a>
+										<a class="nav-link active" data-toggle="tab" href="#booking_apointment_tab">مواعيدي</a>
 									</li>
 								</ul>
 							</div>	
@@ -210,10 +210,7 @@
 												</div>
 											</div>
 											<!-- /Edit Details Modal -->
-											
 										</div>
-
-									
 									</div>
 									<!-- /Personal Details -->
 
@@ -221,7 +218,7 @@
 								<!-- /Personal Details Tab -->
 								
 								<!-- Change Password Tab -->
-								<div class="tab-pane fade show active" id="password_tab">
+								<div class="tab-pane fade " id="password_tab">
 								
 									<div class="card">
 										<div class="card-body">
@@ -232,10 +229,10 @@
 	                                name="le_form"  enctype="multipart/form-data">
 	                                @csrf
 	                                					<input type="hidden" name="patientId" value="{{$patients->id}}">
-														<div class="form-group">
-															<label>كلمة المرور الحالية</label>
-															<input type="password" name="current-password" class="form-control">
-														</div>
+														<!--<div class="form-group">-->
+														<!--	<label>كلمة المرور الحالية</label>-->
+														<!--	<input type="password" name="current-password" class="form-control">-->
+														<!--</div>-->
 														<div class="form-group">
 															<label>كلمة المرور الجديدة</label>
 															<input type="password" name="new-password" class="form-control">
@@ -252,7 +249,7 @@
 									</div>
 								</div>
 
-								<div class="tab-pane fade  " id="booking_apointment_tab" >
+								<div class="tab-pane fade  show active" id="booking_apointment_tab" >
 										<div class="page-header">
 												<div class="row">
 													<div class="col-sm-7 col-auto">
@@ -414,8 +411,7 @@
 				                                                            </div>
 				                                                        </div>
 																	</td>
-																	<td>
-																		<!-- <button type="button" class="btn btn-danger">Danger</button> -->
+																	<!-- <td>				
 																		 <form method="post" action="
 																		   {{route('appointments.destroy',$_item->id) }}">
 				                                                            @csrf
@@ -426,7 +422,14 @@
 				                                                                 </a>
 				                                                            </button>
 				                                                        </form>
-																	</td>													
+																	</td>	 -->
+																	<td class="text-right">
+																		<div class="actions">						
+																			<a  data-toggle="modal" data-catid="{{ $_item->id }}" data-target="#delete_apoint" class="btn btn-sm bg-danger-light">
+																				<i class="fa fa-trash" aria-hidden="true" style="color: red"></i>
+																			</a>
+																		</div>
+																	</td>												
 																</tr>
 																@endforeach
 																	
@@ -500,7 +503,7 @@
 			<select name="" class="form-control formselect required" placeholder="Select Category" id="get_doctors_name">
 													<option  disabled selected>Select</option>	
 													@foreach ($specialities as $_item) 
-													   <option value="{{$_item->id}}">{{$_item->name_ar}}</option>
+													   <option value="{{$_item->id}}" {{(old('get_doctors_name')==$_item->id)? 'selected':''}}>{{$_item->name_ar}}</option>
 													@endforeach
 												</select>
 											</div>
@@ -555,7 +558,6 @@
 							<script type="text/javascript">
 							  $(".myselect").select2();
 							</script>
-					
 									<div class="col-12 col-sm-12">
 										<div class="form-group">
 											<label>التاريخ</label>
@@ -563,15 +565,14 @@
 										</div>
 									</div>
 									<div class="col-md-12 col-sm-12">
-										<div class="form-group " id="get_time">
-																																	
+										<div class="form-group " id="get_time">													
 									    </div>
 									</div>
-									<div >	
-										<input type="hidden" name="gg" id="permanent_type" value="" >
+									<div>	
+										<input type="hidden" name="permanent_type" id="permanent_type"  >
 									</div>
 
-									    <br/><br/>
+									<br/><br/>
 									<button type="submit" class="btn btn-primary btn-block">ارسال </button>
 								</form>
 								<!-- <span  onclick="myFunctionone()">Click </span> -->
@@ -581,17 +582,17 @@
 					</div>
 				</div>
 
-				<script src="http://code.jquery.com/jquery-3.4.1.js"></script>
+				<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
         
 		        <script>
 		        	function myFunctionone() {
-				        document.getElementById("permanent").value = "AM";
+				        document.getElementById("permanent_type").value = "AM";
 					}
 					function myFunctiontwo() {
-				        document.getElementById("permanent").value = "AF";
+				        document.getElementById("permanent_type").value = "AF";
 					}
 					function myFunctionthree() {
-				        document.getElementById("permanent").value = "PM";
+				        document.getElementById("permanent_type").value = "PM";
 					}
 		            $(document).ready(function () {
 		            // get doctors
@@ -695,8 +696,6 @@
 		                            	$('#get_time').append(`<h6>الدوام الأول : </h6>`);   
 		                            	console.log(element.first_time.appointmentbooked);
 		                            	// console.log(element.first_time.appointmentbooked.time);
-		                            	// console.log(element.first_time.appointmentbooked.time);
-		                            	// console.log(element.first_time.appointmentbooked.time);
 		                            	for(var r = 0; r < element.first_time.alltime.length; r++)
 						          		{
 						          			
@@ -708,9 +707,12 @@
 		                                            	<label style="margin:10;">
 		                                            	<input onclick="myFunctionone()" type="radio" name="time"  value="${element.first_time.alltime[r]}" />
 		                                                <span  style="">${element.first_time.alltime[r]}</span>
+
 		                                              </label>
 	                                           		`);
+	                                           		// <span style="">${element.first_time.alltime[r]}</span>
 	                                           		// $('#permanent_type').append(`<input type="hidden" name="permanent_type" value="AM">`);
+
 						          				}else{
 						          					if(element.first_time.alltime[r]!=element.first_time.appointmentbooked.time){
 							          					$('#get_time').append(`
@@ -722,7 +724,7 @@
 		                                           		// $('#permanent_type').append(`<input type="hidden" name="permanent_type" value="AM">`);
 							          				}else{
 							          					$('#get_time').append(`
-			                                            	<label style="margin:10;">
+			                                            	<label style="margin:10; color:red;">
 			                                            	<input type="radio" name="time" disabled value="${element.first_time.alltime[r]}" />
 			                                                <span style="">${element.first_time.alltime[r]}</span>
 			                                              </label>
@@ -749,7 +751,7 @@
 		                                                <span style="">${element.second_time.alltime[r]}</span>
 		                                              </label>
 	                                           		`);
-	                                           		$('#permanent_type').append(`<input type="hidden" name="permanent_type" value="AF">`);
+	                                           		// $('#permanent_type').append(`<input type="hidden" name="permanent_type" value="AF">`);
 						          				}else{
 						          					if(element.second_time.alltime[r]!=element.second_time.appointmentbooked.time){
 							          					$('#get_time').append(`
@@ -758,7 +760,7 @@
 			                                                <span style="">${element.second_time.alltime[r]}</span>
 			                                              </label>
 		                                           		`);
-		                                           		$('#permanent_type').append(`<input type="hidden" name="permanent_type" value="AF">`);	
+		                                           		// $('#permanent_type').append(`<input type="hidden" name="permanent_type" value="AF">`);	
 							          				}else{
 							          					$('#get_time').append(`
 			                                            	<label style="margin:10;">
@@ -791,7 +793,8 @@
 		                                                <span style="">${element.third_time.alltime[r]}</span>
 		                                              </label>
 	                                           		`);
-	                                           		
+	                                           		// $('#permanent_type').append(`<input type="hidden" name="permanent_type" value="PM">`);	
+
 						          				}else{
 						          					if(element.third_time.alltime[r]!=element.third_time.appointmentbooked.time){
 							          					$('#get_time').append(`
@@ -800,7 +803,8 @@
 			                                                <span style="">${element.third_time.alltime[r]}</span>
 			                                              </label>
 		                                           		`);
-		                                           		
+		                                           		// $('#permanent_type').append(`<input type="hidden" name="permanent_type" value="PM">`);	
+
 							          				}else{
 							          					$('#get_time').append(`
 			                                            	<label style="margin:10;">
@@ -828,6 +832,43 @@
 		        </script>
 			
         </div>
+
+
+        <!-- Delete Modal -->
+			<div class="modal fade" id="delete_apoint" aria-hidden="true" role="dialog">
+				<div class="modal-dialog modal-dialog-centered" role="document" >
+					<div class="modal-content">
+					<!--	<div class="modal-header">
+							<h5 class="modal-title">Delete</h5>
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+						</div>-->
+						<div class="modal-body">
+							<div class="form-content p-2">
+								<h4 class="modal-title">Delete</h4>
+								<p class="mb-4">هل انت متأكد من حذف هذا العنصر</p>
+								<div class="row text-center">
+									<div class="col-sm-3">
+									</div>
+									<div class="col-sm-2">
+										<form method="post" action="{{route('patients.delet.apointment')}}">
+	                                   		 @csrf
+	                                         <!-- hidden -->
+	                                         <input type="hidden" name="id" id="cat_id" >
+	                                    	<button type="submit" class="btn btn-primary">حذف </button>
+	                                    </form>
+									</div>
+									<div class="col-sm-2">
+										<button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+									</div>
+								</div>
+								
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 
 <style>
 	
@@ -866,7 +907,19 @@
       padding: 10px 10px;
     }
 </style>
+		<script src="{{asset('js/app.js')}}"></script>
 
+<script type="text/javascript">
+	$('#delete_apoint').on('show.bs.modal', function (event) {
+
+		      var button = $(event.relatedTarget) 
+
+		      var cat_id = button.data('catid') 
+		      var modal = $(this)
+
+		      modal.find('.modal-body #cat_id').val(cat_id);
+	})
+</script>
 
 @endsection
 

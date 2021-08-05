@@ -6,7 +6,8 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Schema;
 use App\Notification;
 use App\Patient;
-
+use App\User;
+use App\Doctor;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -26,8 +27,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-
-        
         // View::composer(['*'], function($view){
         //      $cont = ContactInfo::first();
         //     $view->with('contact',$cont);
@@ -42,17 +41,19 @@ class AppServiceProvider extends ServiceProvider
             }else{
                 $count +=0;
             }
-        }    
-        $notifications= Patient::with(array('unreadnotifications'=>function($query){
-                                    $query;
-                                }))->get(); 
-        // dd($notifications);
+        } 
         view()->share('count', $count);
 
+        $notifications= Doctor::with(array('unreadnotifications'=>function($query){
+                                    $query;
+                                }))->get();
+        $patient_notifications= Patient::with(array('unreadnotifications'=>function($query){
+                                    $query;
+                                }))->get();                         
+
         view()->share('notifications', $notifications);
-
-
-
+        view()->share('patient_notifications', $patient_notifications);
+        
         $cont = ContactInfo::first();
         view()->share('contact', $cont);
 

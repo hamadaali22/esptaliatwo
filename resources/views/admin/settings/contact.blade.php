@@ -40,30 +40,34 @@
 										<h4 class="card-title">General</h4>
 									</div> -->
 									<div class="card-body">
-										<form action="{{url('settings/update')}}" method="POST" 
+										<form action="{{url('settings/contactdata')}}" method="POST" 
 								                name="le_form"  enctype="multipart/form-data">
 								                                @csrf
 											<input type="hidden" name="id" value="{{Auth::user()->id}}">
 											
 											<div class="form-group">
-												<label>phone</label>
+												<label>رقم الهاتف</label>
 												<input type="text" name="phone" class="form-control" value="{{$contactInfo->phone}}">
 											</div>
 											<div class="form-group">
-												<label>email </label>
+												<label>البريد الإلكتروني </label>
 												<input type="text" name="email" class="form-control" value="{{$contactInfo->email}}">
 											</div>
 											<div class="form-group">
-												<label>address </label>
-												<input type="text" name="address" class="form-control" value="{{$contactInfo->address}}">
+												<label>العنوان عربي </label>
+												<input type="text" name="address_ar" class="form-control" value="{{$contactInfo->address_ar}}">
 											</div>
 											<div class="form-group">
-												<label>longitude</label>
+												<label>العنوان انجليزي </label>
+												<input type="text" name="address_en" class="form-control" value="{{$contactInfo->address_en}}">
+											</div>
+											<div class="form-group">
+												<label>خط الطول علي الخريطة</label>
 												<input type="text" name="longitude" class="form-control" value="{{$contactInfo->longitude}}">
 											</div>
 
 											<div class="form-group">
-												<label>latitude</label>
+												<label>خط العرض علي الخريطة</label>
 												<input type="text" name="latitude" class="form-control" value="{{$contactInfo->latitude}}">
 											</div>
 											

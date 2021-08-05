@@ -139,7 +139,7 @@
 											<select class="form-control select" name="countryId">
 												<option>اختر الدولة</option>
 												@foreach ($countries as $_item)
-												   <option value="{{$_item->id}}" >{{$_item->name_ar}}</option>
+								<option value="{{$_item->id}}" {{(old('countryId')==$_item->id)? 'selected':''}}>{{$_item->name_ar}}</option>
 												@endforeach
 											</select>
 										</div>

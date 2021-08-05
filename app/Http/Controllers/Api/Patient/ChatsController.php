@@ -45,9 +45,6 @@ class ChatsController extends Controller
         public function patientSendMessage(Request $request)
         {
             // $user = Auth::user();
-            // doctor-api
-            // patient-api
-        
             // $user = Auth::guard('patient-api')->user();
             $user = Patient::where("id" , $request->id)->first();
            
@@ -74,7 +71,6 @@ class ChatsController extends Controller
             }else{
                 $message = '';
             }
-
             
             $message = $user->messages()->create([
                 'file' => $file,
@@ -85,10 +81,44 @@ class ChatsController extends Controller
                 // 'time'=>$time->format("H:i")
                 'time'=>$request->input('time')
             ]);
-            //  dd($message);
               broadcast(new MessageSent($user,$message,$request->chatID))->toOthers();
+        // start notifacation ////////////  
+              $SERVER_API_KEY = 'AAAA12iRXek:APA91bHSmMEKt_Vi3RamfrBtk5R6p6hN5w0qsj5NotG5Xa5ttX1TudSPZLHBiUEXV4jKQ6CZBb1Cm_142nJroxyVU-3LRfQUYyz2ainfRFqIOdf1srFSU5RTsIgcI1LT1TtWPNf5TwXZ';
+            $doctors= Doctor::where('id',$request->doctorId)->first();
+            $token_1 = $doctors->device_token;
+            $name = $user->first_name;
+            $message='' ;
+            if(isset($request->lang)  && $request -> lang == 'en' ){
+                $message= 'You have a message from';
+            }else{
+                $message='لديك رسالة من ';
+            }
+            
+            $data = [
+                "registration_ids" => [
+                    $token_1
+                ],
+                "notification" => [
+                    "title" => 'Espitalia',
+                    "body" =>  $message + $name ,
+                    "sound"=> "default" // required for sound on ios
+                ],
+            ];
 
-               // return ['status' => 'Message Sent!'];
+            $dataString = json_encode($data);
+            $headers = [
+                'Authorization: key=' . $SERVER_API_KEY,
+                'Content-Type: application/json',
+            ];
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
+            $response = curl_exec($ch);
+        // end notifaction  
               return $this -> returnSuccessMessage('Message Sent!');
         }
 

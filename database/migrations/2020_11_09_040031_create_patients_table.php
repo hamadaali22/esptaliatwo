@@ -24,12 +24,14 @@ class CreatePatientsTable extends Migration
             $table->string('mobile')->nullable();
             $table->text('photo')->nullable();
             $table->string('gender')->nullable();
-            $table->date('dateOfBirth')->nullable();
-            $table->date('lastVisit')->nullable();
+            $table->string('dateOfBirth')->nullable();
+            $table->string('lastVisit')->nullable();
             $table->integer('status')->default(1);
-            $table->integer('paid')->nullable();
+            $table->string('paid')->nullable();
             $table->text('token')->nullable();
             $table->text('device_token')->nullable();
+            $table->text('remember_token')->nullable();
+            
             $table->timestamps();
         });
     }

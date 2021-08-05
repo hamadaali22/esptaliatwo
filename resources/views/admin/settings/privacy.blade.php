@@ -34,23 +34,23 @@
 						<div class="col-12">
 								<div class="card">
 									<div class="card-body">
-										<form action="{{url('settings/update')}}" method="POST" 
+										<form action="{{url('settings/privacy')}}" method="POST" 
 								                name="le_form"  enctype="multipart/form-data">
 								                                @csrf
 											<input type="hidden" name="id" value="{{Auth::user()->id}}">
 											
 											<div class="form-group">
-												<label>privacy</label>
-												<input type="text" name="privacy" class="form-control" value="{{$contactInfo->privacy}}">
+												<label>سياسة الخصوصية عربي</label>
+												<input type="text" name="privacy_ar" class="form-control" value="{{$contactInfo->privacy_ar}}">
+											</div>
+											<div class="form-group">
+												<label>سياسة الخصوصيه انجليزي</label>
+												<input type="text" name="privacy_en" class="form-control" value="{{$contactInfo->privacy_en}}">
 											</div>
 											<button type="submit" class="btn btn-primary btn-block">حفظ التغيير </button>
-											
 										</form>
 									</div>
 								</div>
-							
-							<!-- /General -->
-								
 						</div>
 					</div>
 					

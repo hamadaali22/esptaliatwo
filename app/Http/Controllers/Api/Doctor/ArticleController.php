@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Traits\GeneralTrait;
 //use App\Http\Requests\AircraftRequest;
+use App\Notification;
 
 use DB;
 class ArticleController extends Controller
@@ -49,6 +50,7 @@ class ArticleController extends Controller
         $ghgth->description_en  = $request->description_en;
         $ghgth->image    = $file_nameone;
         $ghgth->save();
+        
         return redirect()->back()->with("message",'تمت الإضافة بنجاح'); 
     }
 

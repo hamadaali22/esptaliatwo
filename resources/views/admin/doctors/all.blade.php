@@ -1,14 +1,17 @@
+
+
 @extends('layout.mainlayout_admin')
 @section('content')	
-	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script> -->
+        <!-- <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet"> -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/switchery/0.8.2/switchery.min.css">
         <script src="https://cdnjs.cloudflare.com/ajax/libs/switchery/0.8.2/switchery.min.js"></script>
-		
-            <div class="page-wrapper">
+        <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css"> -->
+        <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script> -->
+        <!-- <link rel="stylesheet" href="{{ asset('css/app.css') }}"> -->
+
+                 <div class="page-wrapper">
                 <div class="content container-fluid">
-				
-					<!-- Page Header -->
-				
 					<div class="page-header">
 						<div class="row">
 							<div class="col-sm-7 col-auto">
@@ -90,7 +93,8 @@
 													
 													<td>
 														<div class="status-toggle">
- 				<input type="checkbox" data-id="{{ $_item->id }}" name="status"  class="js-switch" {{ $_item->status == 1 ? 'checked' : '' }}>
+										 				<input type="checkbox" data-id="{{ $_item->id }}" name="status" class="js-switch" {{ $_item->status == 1 ? 'checked' : '' }}>
+
 														</div>
 													</td>
 													<td>
@@ -130,9 +134,6 @@
 		                                    
 		                                </table>
 		                            </div>
-
-
-
 								</div>
 							</div>
 						</div>			
@@ -199,7 +200,7 @@
 											<select class="form-control select" name="countryId">
 												<option>اختر الدولة</option>
 												@foreach ($countries as $_item)
-												   <option value="{{$_item->id}}" >{{$_item->name_ar}}</option>
+												   <option value="{{$_item->id}}" {{(old('countryId')==$_item->id)? 'selected':''}}>{{$_item->name_ar}}</option>
 												@endforeach
 											</select>
 										</div>
@@ -210,7 +211,7 @@
 											<select class="form-control select" name="cityId">
 												<option>اختر المدينة</option>
 												@foreach ($cities as $_item)
-												   <option value="{{$_item->id}}" >{{$_item->name_ar}}</option>
+												   <option value="{{$_item->id}}" {{(old('cityId')==$_item->id)? 'selected':''}}>{{$_item->name_ar}}</option>
 												@endforeach
 											</select>
 										</div>
@@ -247,7 +248,7 @@
 											<select class="form-control select" name="specialityId">
 												<option>اختر التخصص</option>
 												@foreach ($specialities as $_item)
-												   <option value="{{$_item->id}}" >{{$_item->name_ar}}</option>
+												   <option value="{{$_item->id}}" {{(old('specialityId')==$_item->id)? 'selected':''}}>{{$_item->name_ar}}</option>
 												@endforeach
 											</select>
 										</div>
@@ -287,8 +288,8 @@
 										<div class="form-group">
 											<label>النوع</label>
 											<select class="form-control select" name="gender">
-												<option  value="Male" >ذكر</option>
-												<option  value="Female" >أنثى</option>
+												<option  value="Male" {{(old('gender')=='Male')? 'selected':''}}>ذكر</option>
+												<option  value="Female" {{(old('gender')=='Female')? 'selected':''}}>أنثى</option>
 											</select>
 										</div>
 									</div>
@@ -525,14 +526,35 @@
 					</div>
 				</div>
 			</div>
-		
-        </div>
+    
+ 
 
+    <script>
+        let elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
 
-		<script>
+        elems.forEach(function(html) {
+            let switchery = new Switchery(html,  { size: 'small' });
+        });
+        $(document).ready(function(){
+            $('.js-switch').change(function () {
+                let status = $(this).prop('checked') === true ? 1 : 0;
+                let userId = $(this).data('id');
+                $.ajax({
+                    type: "GET",
+                    dataType: "json",
+                    url: '{{ route('doctors.update.status') }}',
+                    data: {'status': status, 'user_id': userId},
+                    success: function (data) {
+                        toastr.options.closeButton = true;
+                        toastr.options.closeMethod = 'fadeOut';
+                        toastr.options.closeDuration = 100;
+                        toastr.success(data.message);
+                    }
+                });
+            });
+        });
 
-
-		  $('#delete').on('show.bs.modal', function (event) {
+        $('#delete').on('show.bs.modal', function (event) {
 
 		      var button = $(event.relatedTarget) 
 
@@ -542,34 +564,6 @@
 		      modal.find('.modal-body #cat_id').val(cat_id);
 		})
 
-
-		</script>
-
-
-		<script>
-		        let elems = Array.prototype.slice.call(document.querySelectorAll('.js-switch'));
-
-		        elems.forEach(function(html) {
-		            let switchery = new Switchery(html,  { size: 'small' });
-		        });
-		        $(document).ready(function(){
-		            $('.js-switch').change(function () {
-		                let status = $(this).prop('checked') === true ? 1 : 0;
-		                let userId = $(this).data('id');
-		                $.ajax({
-		                    type: "GET",
-		                    dataType: "json",
-		                    url: '{{ route('doctors.update.status') }}',
-		                    data: {'status': status, 'user_id': userId},
-		                    success: function (data) {
-		                        toastr.options.closeButton = true;
-		                        toastr.options.closeMethod = 'fadeOut';
-		                        toastr.options.closeDuration = 100;
-		                        toastr.success(data.message);
-		                    }
-		                });
-		            });
-		        });
-		    </script>
-		<!-- /Main Wrapper -->
+    </script>
+  
 @endsection

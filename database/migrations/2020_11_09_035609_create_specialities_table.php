@@ -20,6 +20,7 @@ class CreateSpecialitiesTable extends Migration
             $table->text('description_ar')->nullable();
             $table->text('description_en')->nullable();
             $table->text('icon')->nullable();
+            $table->integer('top')->default(0);
             $table->timestamps();
         });
     }

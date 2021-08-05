@@ -15,12 +15,14 @@ class CreatePaymentsTable extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('doctorId');
-            $table->foreign('doctorId')->references('id')->on('doctors');
-            $table->unsignedBigInteger('patientId');
-            $table->foreign('patientId')->references('id')->on('patients');
+            // $table->unsignedBigInteger('doctorId');
+            // $table->foreign('doctorId')->references('id')->on('doctors');
+            // $table->unsignedBigInteger('patientId');
+            // $table->foreign('patientId')->references('id')->on('patients');
+            $table->integer('doctorId');
+            $table->integer('patientId');
             $table->unsignedBigInteger('appointmentId');
-            $table->foreign('appointmentId')->references('id')->on('appointments');
+            $table->foreign('appointmentId')->references('id')->on('appointments')->onDelete('cascade');
             $table->string('type')->nullable();
             $table->string('company')->nullable();
             $table->string('name')->nullable();
@@ -30,6 +32,7 @@ class CreatePaymentsTable extends Migration
             $table->string('year')->nullable();
             $table->date('date')->nullable();
             $table->time('time')->nullable();
+            $table->string('integer')->nullable();
             $table->timestamps();
         });
     }

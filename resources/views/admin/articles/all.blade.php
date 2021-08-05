@@ -133,22 +133,19 @@
 										<div class="form-group">
 											<label >الوصف عربي</label>											
 												<textarea rows="5" cols="5" name="description_ar" class="form-control" placeholder="أدخل النص فقط">{{old('description_ar')}}</textarea>
-											
 										</div>
 									</div>
 									<div class="col-12 col-sm-12">
 										<div class="form-group">
 											<label >الوصف انجليزي</label>
-											
 												<textarea rows="5" cols="5" name="description_en" class="form-control" placeholder="أدخل النص فقط">{{old('description_en')}}</textarea>
-											
 										</div>
 									</div>
 									
 									<div class="col-12 col-sm-12">
 										<div class="form-group">
 											<label>الصوره </label>
-											<input type="file" name="image" class="form-control">
+											<input type="file" name="image" class="form-control" value="{{old('image')}}">
 										</div>
 									</div>
 									

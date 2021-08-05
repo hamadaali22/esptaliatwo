@@ -15,14 +15,15 @@ class CreateArticlesTable extends Migration
     {
         Schema::create('articles', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('doctorId')->nullable();
-            // $table->foreign('doctorId')->references('id')->on('doctors');
-            $table->string('author');
+            $table->unsignedBigInteger('doctorId');
+            $table->foreign('doctorId')->references('id')->on('doctors')->onDelete('cascade');
+            $table->integer('specialityId')->nullable();
             $table->string('title_ar')->nullable();
             $table->string('title_en')->nullable();
             $table->text('description_ar')->nullable();
             $table->text('description_en')->nullable();
             $table->text('image')->nullable();
+
             $table->timestamps();
         });
     }

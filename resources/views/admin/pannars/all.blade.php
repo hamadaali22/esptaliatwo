@@ -114,7 +114,7 @@
 									<div class="col-12 col-sm-6">
 										<div class="form-group">
 											<label>بنر</label>
-											<input type="file"  name="pannar" class="form-control" >
+											<input type="file"  name="pannar" class="form-control" value="{{old('pannar')}}">
 										</div>
 									</div>
 									

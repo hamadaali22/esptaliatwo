@@ -54,6 +54,13 @@
 							<li   class="{{ Request::is('cities') ? 'active' : '' }}"> 
 								<a href="{{url('cities')}}"><i class="fe fe-vector"></i> <span>المدن</span></a>
 							</li>
+							
+							<li   class="{{ Request::is('doctornotifaction') ? 'active' : '' }}"> 
+								<a href="{{url('doctornotifaction')}}"><i class="fe fe-vector"></i> <span>ارسال اشعارات لدكتور</span></a>
+							</li>
+							<li   class="{{ Request::is('patientnotifaction') ? 'active' : '' }}"> 
+								<a href="{{url('patientnotifaction')}}"><i class="fe fe-vector"></i> <span>ارسال اشعارات لمريض</span></a>
+							</li>
 
 
 
@@ -63,9 +70,9 @@
 							<li   class="{{ Request::is('contact') ? 'active' : '' }}"> 
 								<a href="{{url('contact')}}"><i class="fe fe-vector"></i> <span>معلومات التواصل</span></a>
 							</li>
-							<li   class="{{ Request::is('about') ? 'active' : '' }}"> 
-								<a href="{{url('about')}}"><i class="fe fe-vector"></i> <span>من نحن</span></a>
-							</li>
+							<!--<li   class="{{ Request::is('about') ? 'active' : '' }}"> -->
+							<!--	<a href="{{url('about')}}"><i class="fe fe-vector"></i> <span>من نحن</span></a>-->
+							<!--</li>-->
 							<li   class="{{ Request::is('privacy') ? 'active' : '' }}"> 
 								<a href="{{url('privacy')}}"><i class="fe fe-vector"></i> <span>سياسية الخصوصية</span></a>
 							</li>

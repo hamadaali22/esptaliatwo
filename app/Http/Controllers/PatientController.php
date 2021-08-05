@@ -10,7 +10,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use DB;
 use App\Traits\GeneralTrait;
+use Illuminate\Support\Str;
 use Hash;
+use Mail;
 use Carbon\Carbon;
 class PatientController extends Controller
 {
@@ -30,48 +32,48 @@ class PatientController extends Controller
     public function store(Request $request)
     {
         // dd($request->photo);
-        
-        $add = new Patient();
-        if($file=$request->file('photo'))
-        {
-            $file_extension = $request -> file('photo') -> getClientOriginalExtension();
-            $file_name = time().'.'.$file_extension;
-            $file_nameone = $file_name;
-            $path = 'assets_admin/img/patients';
-            $request-> file('photo') ->move($path,$file_name);
-            $add->photo  = $file_nameone;
+        $checkemail = Patient::where("email" , $request->email)->first();
+        if($checkemail){
+            return redirect()->back()->with("error", 'البريد الإلكتروني موجود مسبقا'); 
         }else{
-            $add->photo  = $request->url; 
-        }
+            $add = new Patient();
+            if($file=$request->file('photo'))
+            {
+                $file_extension = $request -> file('photo')-> getClientOriginalExtension();
+                $file_name = time().'.'.$file_extension;
+                $file_nameone = $file_name;
+                $path = 'assets_admin/img/patients';
+                $request-> file('photo') ->move($path,$file_name);
+                $add->photo  = $file_nameone;
+            }else{
+                $add->photo  = $request->url; 
+            }
 
-        $add->first_name_ar  = $request->first_name_ar; 
-        $add->last_name_ar  = $request->last_name_ar; 
-        $add->first_name_en  = $request->first_name_en; 
-        $add->last_name_en  = $request->last_name_en;    
-        $add->email  = $request->email;   
-        $add->password  = bcrypt($request->password); 
-        // $add->password  = Hash::make($request->password);
-        $add->mobile  = $request->mobile; 
-        $add->gender  = $request->gender; 
-        $add->dateOfBirth  = $request->dateOfBirth;  
-        
-        $add-> save();
+            $add->first_name_ar  = $request->first_name_ar; 
+            $add->last_name_ar  = $request->last_name_ar; 
+            $add->first_name_en  = $request->first_name_en; 
+            $add->last_name_en  = $request->last_name_en;    
+            $add->email  = $request->email;   
+            $add->password  = bcrypt($request->password); 
+            // $add->password  = Hash::make($request->password);
+            $add->mobile  = $request->mobile; 
+            $add->gender  = $request->gender; 
+            $add->dateOfBirth  = $request->dateOfBirth;  
+            $add-> save();
 
-        $user = $add->toArray();
-        $user['link'] = Str::random(32);
-        DB::table('user_activations')->insert(['id_user'=>$user['id'],'token'=>$user['link']]);
-        Mail::send('emails.patient-activation', $user, function($message) use ($user){
-            $message->to($user['email']);
-            $message->subject('esptaila - Activation Code');
-        });
-        return redirect()->back()->with("message",'تمت الإضافة بنجاح'); 
+            $user = $add->toArray();
+            $user['link'] = Str::random(32);
+            DB::table('user_activations')->insert(['id_user'=>$user['id'],'token'=>$user['link']]);
+            Mail::send('emails.patient-activation', $user, function($message) use ($user){
+                $message->to($user['email']);
+                $message->subject('esptaila - Activation Code');
+            });
+            return redirect()->back()->with("message",'تمت الإضافة بنجاح'); 
+        }    
     }
-
 
     public function destroy(Request $request )
     {
-        
-
         $appointment=Appointment::where('patientId',$request->id)->get(); 
         if(count($appointment) == 0){
            $delete = Patient::findOrFail($request->id);
@@ -136,24 +138,24 @@ class PatientController extends Controller
         return view('admin.patients.patient-profile',compact('patients','appointments','specialities','doctors'));
     }
 
-    public function changePassword(Request $request){
+   public function changePassword(Request $request){
         $patient=Patient::where('id',$request->patientId)->first();
         // dd($patient->password);
 
 
         $this->validate($request, [
-            'current-password'     => 'required',
+            // 'current-password'     => 'required',
             'new-password'     => 'required',
             // 'confirm_password' => 'required|same:new_password',
         ]);
 
-        if (!(Hash::check($request->get('current-password'), $patient->password))) {
-            return redirect()->back()->with("error","كلمة المرور الحالية لا تتطابق مع كلمة المرور التي قدمتها. حاول مرة اخرى.");
-        }
+        // if (!(Hash::check($request->get('current-password'), $patient->password))) {
+        //     return redirect()->back()->with("error","كلمة المرور الحالية لا تتطابق مع كلمة المرور التي قدمتها. حاول مرة اخرى.");
+        // }
 
-        if(strcmp($request->get('current-password'), $request->get('new-password')) == 0){
-            return redirect()->back()->with("error","لا يمكن أن تكون كلمة المرور الجديدة هي نفسها كلمة مرورك الحالية. الرجاء اختيار كلمة مرور مختلفة.");
-        }
+        // if(strcmp($request->get('current-password'), $request->get('new-password')) == 0){
+        //     return redirect()->back()->with("error","لا يمكن أن تكون كلمة المرور الجديدة هي نفسها كلمة مرورك الحالية. الرجاء اختيار كلمة مرور مختلفة.");
+        // }
 
         
         $patient->password = bcrypt($request->get('new-password'));
@@ -259,13 +261,14 @@ class PatientController extends Controller
 
     public function addBooking(Request $request)
     {
-        
+        // dd($request->all());
         // $add = new Appointment;
         // $add->patientId    = $request->patientId;
         // $add->doctorId    = $request->doctorId;
         // $add->date  = $request->date;
         // $add->time  = $request->time;
         // $add->save();
+        // dd($request->all());
 
         $appointments=Appointment::where('patientId',$request->patientId)
                                    ->where('doctorId',$request->doctorId)
@@ -273,7 +276,8 @@ class PatientController extends Controller
                                    ->where('status',"confirmed")
                                    ->where('payment_status','!=',0)
                                    ->first();
-        if($appointments ==null){
+        // dd($appointments);                         
+        if($appointments !=null){
             return redirect()->back()->with("error", 'لديك موعد مع هذا الدكتور بالفعل'); 
              // return $this->returnError('001', 'لديك موعد سابق بالفعل مع هذا الدكتور ');
         }else{
@@ -284,6 +288,7 @@ class PatientController extends Controller
             $add->time  = $request->time;
             $add->permanent_type  = $request->permanent_type;
             $add->type  = $request->type;
+            $add->payment_status  = 1;
             $add->save();
             // dd($add);
             // return $this->returnData('bookingid', $add->id);
@@ -307,6 +312,17 @@ class PatientController extends Controller
         $user->save();
 
         return response()->json(['message' => 'تم تعديل الحالة']);
+    }
+    public function patientDeletApointment(Request $request)
+    {
+        // dd($request->id);
+        // $delete=Appointment::where('patientId',$request->id)->get(); 
+        // $delete->delete();
+        
+        $delete = Appointment::findOrFail($request->id);
+        $delete->delete();
+        return redirect()->back()->with("message",'تم الحذف');
+     
     }
 
         // for ($j = 0; $j <= 120; $j+=15){

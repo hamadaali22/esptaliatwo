@@ -80,7 +80,6 @@ class DoctorAuthController extends Controller
             return $this->returnError($ex->getCode(), $ex->getMessage());
         }
 
-
     }
     public function register(Request $request)
     {
@@ -144,7 +143,7 @@ class DoctorAuthController extends Controller
             DB::table('user_activations')->insert(['id_user'=>$user['id'],'token'=>$user['link']]);
             Mail::send('emails.doctor-activation', $user, function($message) use ($user){
                 $message->to($user['email']);
-                $message->subject('esptaila - Activation Code');
+                $message->subject('esptalia - Activation Code');
             });
 
             $video=[
@@ -152,6 +151,8 @@ class DoctorAuthController extends Controller
                 'services_name_ar'  => "استشارة فيديو",
                 'services_name_en'  => "Video consulting",
                 'price'  => 3,
+                'icon' => 'video.jpeg',
+                'duration'=>15,
                 'type'  => "Video",
             ];
             $reavel=[
@@ -159,8 +160,10 @@ class DoctorAuthController extends Controller
                 'services_name_ar'  => "كشف ف العيادة",
                 'services_name_en'  => "Examination in the clinic",
                 'price'  => 3,
+                'icon' => 'reavl.png',
+                'duration'=>15,
                 'type'  => "reavel",
-            ];   
+            ];    
             $serv1 = Service::create($video);
             $serv2 = Service::create($reavel);
             
@@ -437,9 +440,17 @@ class DoctorAuthController extends Controller
         $edit-> save();
         // dd($edit);
         // dd($edit->id);
-        $doctor = Doctor::selection()->find($edit->id);
+        $doctors = Doctor::selection()->where('id',$edit->id)->get();
+        // $cities= City::selection()->where('id',"1")->first();
+        // dd($cities);
+        foreach ($doctors as $item) {
+            $item->specialityName= Speciality::selection()->where('id',$item->specialityId)->first();   
+            $item->serviceName= Service::selection()->where('doctorId',$item->id)->get();  
+            $item->countries= Country::selection()->where('id',$item->countryId)->first();
+            $item->cities= City::selection()->where('id',$item->cityId)->first();
+        }
 
-        return $this -> returnData('doctor' , $doctor);
+        return $this -> returnDataa('doctor' , $doctors,'تم التعديل بنجاح');
 
         // return $this -> returnSuccessMessage('تم التعديل بنجاح');
         
@@ -474,14 +485,27 @@ class DoctorAuthController extends Controller
                 // $ss=bcrypt($request->old_password);
                 //  dd($ss);
                 if ((Hash::check(request('old_password'), $userid->password)) == false) {
-                    $arr = array("status" => 400, "message" => "Check your old password.", "data" => array());
+                    if(isset($request->lang)  && $request -> lang == 'en' ){
+                        $arr = array("status" => 400, "message" => "Check your old password.", "data" => array());
+                    } else {
+                        $arr = array("status" => 400, "message" => "تحقق من كلمة السر القديمة.", "data" => array());
+                    }
                 } else if ((Hash::check(request('new_password'), $request->password)) == true) {
-                    $arr = array("status" => 400, "message" => "Please enter a password which is not similar then current password.", "data" => array());
+                    
+                    if(isset($request->lang)  && $request -> lang == 'en' ){
+                        $arr = array("status" => 400, "message" => "Please enter a password which is not similar then current password.", "data" => array());
+                    } else {
+                        $arr = array("status" => 400, "message" => "الرجاء إدخال كلمة مرور لا تشبه كلمة المرور الحالية.", "data" => array());
+                    }  
                 } else {
-                     $userid->password  = Hash::make($input['new_password']);
+                     $userid->password  = bcrypt($input['new_password']);
                      $userid->save();
-                    // Patient::where('id', $userid)->update(['password' => Hash::make($input['new_password'])]);
-                    $arr = array("status" => 200, "message" => "Password updated successfully.", "data" => $userid);
+                    
+                    if(isset($request->lang)  && $request -> lang == 'en' ){
+                        $arr = array("status" => 200, "message" => "Password updated successfully.", "data" => $userid);
+                    } else {
+                        $arr = array("status" => 200, "message" => "تم تحديث كلمة السر بنجاح.", "data" => $userid);
+                    } 
                 }
             } catch (\Exception $ex) {
                 if (isset($ex->errorInfo[2])) {
@@ -518,23 +542,39 @@ class DoctorAuthController extends Controller
             $arr = array("status" => 400, "message" => $validator->errors()->first(), "data" => array());
         } else {
             try {
-                
-                 $doctorss= Doctor::where('email',$request->email)->first();
+                $doctorss= Doctor::where('email',$request->email)->first();
                 if($doctorss==null){
                     return $this -> returnError('البريد الإلكتروني غير موجود');
                 }else{
-                    // $user->registartionId = str_rand(6 only digit)->unique;
+                    // // $user->registartionId = str_rand(6 only digit)->unique;
+                    // $gene = mt_rand(1000000000, 9999999999);
+                    // $doctorss->password = bcrypt($gene);
+                    // // str_rand(8)->make_bcrypt->unique;
+                    // $doctorss->save();
+                    // // dd($doctorss);
+                    // $details = [
+                    //     'title' => 'Password of Esptalia',
+                    //     'body' => 'cope this password to enter Esptalia ' ." " . $gene . " "
+                    // ];
+                   
+                    // \Mail::to($request->email)->send(new \App\Mail\MyTestMail($details));
+                    
                     $gene = mt_rand(1000000000, 9999999999);
                     $doctorss->password = bcrypt($gene);
                     // str_rand(8)->make_bcrypt->unique;
                     $doctorss->save();
                     // dd($doctorss);
-                    $details = [
-                        'title' => 'Password of Esptalia',
-                        'body' => 'cope this password to enter Esptalia ' ." " . $gene . " "
-                    ];
-                   
-                    \Mail::to($request->email)->send(new \App\Mail\MyTestMail($details));
+                    // $details = [
+                    //     'title' => 'Password of Esptalia',
+                    //     'body' => 'cope this password to enter Esptalia ' ." " . $gene . " "
+                    // ];
+                    
+                   $user = $doctorss->toArray();
+                   $user['passwordgenerat'] =  $gene;
+                    Mail::send('emails.forgot', $user, function($message) use ($user){
+                        $message->to($user['email']);
+                        $message->subject('esptaila - New password');
+                    });
                    
                     // dd("Email is Sent.");
                     if(isset($request->lang)  && $request -> lang == 'en' ){
@@ -545,19 +585,6 @@ class DoctorAuthController extends Controller
 
                 }
                     
-
-
-                    
-
-
-
-
-
-
-
-
-
-
 
             } catch (\Swift_TransportException $ex) {
                 $arr = array("status" => 400, "message" => $ex->getMessage(), "data" => []);

@@ -25,4 +25,4 @@
 		<script src="{{asset('asset/js/table.min.js')}}"></script>
 		<script src="{{asset('asset/js/admin.js')}}"></script>
 		<script src="{{asset('asset/js/pages/tables/jquery-datatable.js')}}"></script>
-		<script src="{{asset('js/app.js')}}"></script>
+		<!--<script src="{{asset('js/app.js')}}"></script>-->

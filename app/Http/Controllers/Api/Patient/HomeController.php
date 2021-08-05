@@ -135,8 +135,8 @@ class HomeController extends Controller
         }
         // dd($doctors);
         
-        $specialities = Speciality::selection()->orderBy('id', 'DESC')->get();
-        $articles = Article::selection()->get();
+        $specialities = Speciality::selection()->where('top',1)->orderBy('id', 'DESC')->get();
+        $articles = Article::selection() ->orderBy('id', 'DESC')->get();
         $home  = [  
                     'specialities'=>$specialities,
                     'doctors'=>$doctors,
@@ -265,7 +265,7 @@ class HomeController extends Controller
                                     ->where('payment_status',1)
                                     ->get();
         // dd($checktimefound);
-      
+        
         foreach ($times as $item) {
             
             if($request->date >=$item->from_date){
@@ -335,8 +335,6 @@ class HomeController extends Controller
             }else{
                 return $this->returnData('times', []); 
             }
-            
-               
             
         }   
        
@@ -418,7 +416,7 @@ class HomeController extends Controller
             $SERVER_API_KEY = 'AAAA12iRXek:APA91bHSmMEKt_Vi3RamfrBtk5R6p6hN5w0qsj5NotG5Xa5ttX1TudSPZLHBiUEXV4jKQ6CZBb1Cm_142nJroxyVU-3LRfQUYyz2ainfRFqIOdf1srFSU5RTsIgcI1LT1TtWPNf5TwXZ';
             $doctors= Doctor::where('id',$add->doctorId)->first();
             $patients= Patient::selection()->where('id',$add->patientId)->first();
-            dd($patients);
+            // dd($patients);
             $token_1 = $doctors->device_token;
             $name = $patients->first_name;
             $message='' ;
@@ -434,7 +432,7 @@ class HomeController extends Controller
                 ],
                 "notification" => [
                     "title" => 'Espitalia',
-                    "body" => $name + $message;
+                    "body" => $name. ' ' .$message,
                     "sound"=> "default" // required for sound on ios
                 ],
             ];
@@ -480,9 +478,10 @@ class HomeController extends Controller
         $appointments=Appointment::where('patientId',$request->id)
                                    ->where('payment_status','!=',0)
                                     ->orderBy('id', 'DESC')->get();
-        foreach ($appointments as $item) {
+       foreach ($appointments as $item) {
+            $doctor= Doctor::selection()->where('id',$item->doctorId)->first();
             $item->doctor= Doctor::selection()->where('id',$item->doctorId)->first(); 
-            $item->specialityName= Speciality::selection()->first();  
+            $item->specialityName= Speciality::selection()->where('id',$doctor->specialityId)->first();  
         }
         return $this->returnData('appointments', $appointments);
     }

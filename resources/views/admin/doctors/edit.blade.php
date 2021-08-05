@@ -234,28 +234,45 @@
 
 									<div class="col-12 col-sm-12">
 										<div class="form-group">
-											<a href="{{asset('assets_admin/img/doctors/degree/'.$doctor->university_degree) }}" target="_black">
+											<!-- <a href="{{asset('assets_admin/img/doctors/degree/'.$doctor->university_degree) }}" target="_black">
 												<embed src="{{asset('assets_admin/img/doctors/degree/'.$doctor->university_degree) }}"  style="width:90px; height:50px;" frameborder="1">
-											</a>
+											</a> -->
 											
-											<a href="{{asset('assets_admin/img/doctors/degree/'.$doctor->university_degree) }}" target="_black">
-											<label>الشهادة الجامعية </label>			</a>								
+											@if($doctor->university_degree!=null)
+                                                <a href="{{asset('assets_admin/img/doctors/degree/'.$doctor->university_degree) }}" target="_black">
+										    	<label>الشهادة الجامعية </label></a>    
+											@else
+											   <label>الشهادة الجامعية </label>
+											@endif								
 											<input type="file" name="university_degree" class="form-control" >
 										</div>
 									</div>
 									<div class="col-12 col-sm-12">
 										<div class="form-group">
-											<embed src="{{asset('assets_admin/img/doctors/certificate/'.$doctor->practice_certificate) }}"  style="width:90px; height:90px;" frameborder="1">
-											
-											<label>شهادة مزاولة المهنة </label>
+											<!-- <embed src="{{asset('assets_admin/img/doctors/certificate/'.$doctor->practice_certificate) }}"  style="width:90px; height:90px;" frameborder="1"> -->
+											@if($doctor->practice_certificate!=null)
+                                                <a href="{{asset('assets_admin/img/doctors/certificate/'.$doctor->practice_certificate) }}" target="_black">
+										    	<label>شهادة مزاولة المهنة </label></a>    
+											@else
+
+											    <label>شهادة مزاولة المهنة </label>
+											@endif
 											<input type="file" name="practice_certificate" class="form-control" >
 										</div>
 									</div>
 									<div class="col-12 col-sm-12">
 										<div class="form-group">
-											<embed src="{{asset('assets_admin/img/doctors/certificate/'.$doctor->other_qualification) }}"  style="width:90px; height:90px;" frameborder="1">
+											<!-- <embed src="{{asset('assets_admin/img/doctors/qualification/'.$doctor->other_qualification) }}"  style="width:90px; height:90px;" frameborder="1"> -->
 											
-											<label>مؤهلات أخرى </label>
+
+											@if($doctor->other_qualification!=null)
+                                                <a href="{{asset('assets_admin/img/doctors/qualification/'.$doctor->other_qualification) }}" target="_black">
+										    	<label>مؤهلات أخرى </label></a>    
+											@else
+
+											    <label>مؤهلات أخرى </label></a>
+											@endif
+										
 											<input type="file" name="other_qualification" class="form-control" >
 										</div>
 									</div>

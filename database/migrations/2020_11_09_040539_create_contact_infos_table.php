@@ -23,6 +23,8 @@ class CreateContactInfosTable extends Migration
             $table->string('address_ar')->nullable();
             $table->string('address_en')->nullable();
             $table->text('location')->nullable();
+            $table->text('longitude')->nullable();
+            $table->text('latitude')->nullable();
             $table->text('mesion_ar')->nullable();
             $table->text('mesion_en')->nullable();
             $table->text('mesion_image')->nullable();

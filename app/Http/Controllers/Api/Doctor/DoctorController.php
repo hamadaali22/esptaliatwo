@@ -294,11 +294,6 @@ class DoctorController extends Controller
     //  public function AddApointment(Request $request)
     // {
         
-        
-
-
-
-
 
     //     $from_date = $request->input("from_date");
     //     $to_date = $request->input("to_date");
@@ -309,30 +304,30 @@ class DoctorController extends Controller
                 
                 
 
-    //             // $length = count($res);
+                // $length = count($res);
 
-    //             $length = count($request->day);
-    //             dd($length);
-    //             if($res > 0)
-    //             {
-    //                 for($i=0; $i<$res; $i++)
-    //                {
-    //                 $person= new WorkingDays;
-    //                 $person->doctorId  = $request->doctorId;
-    //                 $person->from_date  = $request->from_date[$i];
-    //                 $person->to_date  = $request->to_date;
-    //                 $person->day  = $request->day;
-    //                 $person->from_morning  = $request->from_morning;
-    //                 $person->to_morning  = $request->to_morning;
-    //                 $person->from_afternoon  = $request->from_afternoon;
-    //                 $person->to_afternoon  = $request->to_afternoon;
-    //                 $person->from_evening  = $request->from_evening;
-    //                 $person->to_evening  = $request->to_evening;
-    //                 $person->duration  = $request->duration;
-    //                 $person->save();
-    //                }
-    //                return redirect()->back()->with("message", 'تم الإضافة بنجاح'); 
-    //             }
+                $length = count($request->day);
+                dd($length);
+                if($res > 0)
+                {
+                    for($i=0; $i<$res; $i++)
+                   {
+                    $person= new WorkingDays;
+                    $person->doctorId  = $request->doctorId;
+                    $person->from_date  = $request->from_date[$i];
+                    $person->to_date  = $request->to_date;
+                    $person->day  = $request->day;
+                    $person->from_morning  = $request->from_morning;
+                    $person->to_morning  = $request->to_morning;
+                    $person->from_afternoon  = $request->from_afternoon;
+                    $person->to_afternoon  = $request->to_afternoon;
+                    $person->from_evening  = $request->from_evening;
+                    $person->to_evening  = $request->to_evening;
+                    $person->duration  = $request->duration;
+                    $person->save();
+                   }
+                   return redirect()->back()->with("message", 'تم الإضافة بنجاح'); 
+                }
                 
     //         }else{
     //            return redirect()->back()->with("error", ' يجب ان يكون تاريخ البداية اصغر من تاريخ النهاية'); 

@@ -55,7 +55,7 @@
 								@foreach ($_item->unreadnotifications as $_items) 
 									
 									<li class="notification-message">
-										<a href="{{url('getusernot')}}">
+										<a href="{{url('view/notification/'.$_item->id)}}">
 											<div class="media">
 												<span class="avatar avatar-sm">
 													

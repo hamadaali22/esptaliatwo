@@ -26,22 +26,18 @@ class ChatsController extends Controller
             return Message::with('user')->get();
         }
 
-        
-
         public function sendMessage(Request $request)
         {
-              // $user = Auth::user();
-                // doctor-api
-                // patient-api
-                $user = Auth::guard('patient-api')->user();
-               // dd($user);
-              $message = $user->messages()->create([
+            // $user = Auth::user();
+            // doctor-api
+            // patient-api
+            $user = Auth::guard('patient-api')->user();
+            // dd($user);
+            $message = $user->messages()->create([
                 'message' => $request->input('message')
-              ]);
-             
-              broadcast(new MessageSent($user,$message,$request->chatId))->toOthers();
-
-              return ['status' => 'Message Sent!'];
+            ]);
+            broadcast(new MessageSent($user,$message,$request->chatId))->toOthers();
+            return ['status' => 'Message Sent!'];
         }
 
 

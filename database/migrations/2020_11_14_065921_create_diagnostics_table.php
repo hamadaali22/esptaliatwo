@@ -16,11 +16,18 @@ class CreateDiagnosticsTable extends Migration
         Schema::create('diagnostics', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('doctorId');
-            $table->foreign('doctorId')->references('id')->on('doctors');
+            $table->foreign('doctorId')->references('id')->on('doctors')->onDelete('cascade');
             $table->unsignedBigInteger('patientId');
-            $table->foreign('patientId')->references('id')->on('patients');
-            $table->string('sintomas')->nullable();
-            $table->string('diagnostico')->nullable();
+            $table->foreign('patientId')->references('id')->on('patients')->onDelete('cascade');
+            $table->integer('appointmentId')->nullable();
+            $table->string('weight')->nullable();
+            $table->string('hight')->nullable();
+            $table->string('blood')->nullable();
+            $table->string('temp')->nullable();
+            $table->text('complaint')->nullable();
+            $table->text('symptoms')->nullable();
+            $table->text('diagnosis')->nullable();
+            $table->text('medicine')->nullable();
             $table->date('date')->nullable();
             $table->time('time')->nullable();
             $table->timestamps();

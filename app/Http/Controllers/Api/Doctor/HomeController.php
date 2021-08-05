@@ -64,7 +64,7 @@ class HomeController extends Controller
         }
         $count_evening= count($appoint_after);
         $offers = Offer::selection()->where('doctorId',$request->doctorId)->orderBy('id', 'DESC')->get();        
-        $articles = Article::selection()->where('doctorId',$request->doctorId)->get();  
+        $articles = Article::selection()->where('doctorId',$request->doctorId)->orderBy('id', 'DESC')->get();  
         foreach ($articles as $item) {
             $item->specialityName= Speciality::selection()->where('id',$item->specialityId)->first();     
         }  
@@ -86,6 +86,7 @@ class HomeController extends Controller
         $offers = Offer::where('id',$request->offerId)->first();  
          return $this -> returnData('offer',$offers);
     }
+    
     public function getAppointmentById(Request $request)
     {
         
@@ -162,6 +163,12 @@ class HomeController extends Controller
             $add->save();
             // dd($add);
 
+            $doctor = Doctor::find($request->doctorId)->first();  
+
+            // $doctor->notify(new \App\Notifications\PatientNewNotification($doctor->first_name_en,  $add->offer_name_en,$add->description_ar));
+            
+            Notification::send($user, new \App\Notifications\DoctorNewNotification($doctor->first_name_en,  $add->offer_name_en,$add->description_ar));
+
             if(isset($request -> lang)  && $request -> lang == 'en' ){
                 return $this -> returnSuccessMessage('added Successfully ');
             }else{
@@ -235,7 +242,7 @@ class HomeController extends Controller
     {
             
             $edit = Service::findOrFail($request->id);
-            $edit->doctorId  = $request->doctorId;
+            // $edit->doctorId  = $request->doctorId;
             $edit->price  = $request->price;
             $edit->status  = $request->status;
             $edit->update();
@@ -265,8 +272,12 @@ class HomeController extends Controller
     public function getServices(Request $request)
     {
         $services=Service::selection()->where('doctorId',$request->doctorId)->get();
+        foreach ($services as $item) {
+            $durationdoctor= WorkingDays::where('doctorId',$request->doctorId)->first(); 
+        }
         return $this -> returnData('services',$services);
     }
+
     public function doctorSpecialities()
     {
         $speciality=Speciality::selection()->get();
@@ -367,7 +378,7 @@ class HomeController extends Controller
         //     $item->patient= Patient::selection()->where('id',$item->patientId)->first();
         // }
         
-         foreach ($diagnostics as $item) {
+        foreach ($diagnostics as $item) {
             $item->patient= Patient::selection()->where('id',$item->patientId)->first();
             $item->sum=Payment::where('doctorId',$request->doctorId)
                                 ->where('patientId',$request->patientId)
@@ -402,7 +413,7 @@ class HomeController extends Controller
             $edit = Appointment::findOrFail($request->appointmentId);
             $edit->status  = "combledted";//Completed
             $edit->save();    
-               
+
             if(isset($request->lang)  && $request -> lang == 'en' ){
                 return $this -> returnSuccessMessage('added Successfully ');
             }else{
@@ -428,7 +439,7 @@ class HomeController extends Controller
             $ghgth->time  = $time->format("H:i");
             $ghgth->save();
             // dd($ghgth);    
-                
+
             if(isset($request->lang)  && $request -> lang == 'en' ){
                 return $this -> returnSuccessMessage('Updated Successfully ');
             }else{
@@ -442,6 +453,65 @@ class HomeController extends Controller
         $edit = Appointment::findOrFail($request->id);
         $edit->status  = $request->status;
         $edit->save();
+
+
+        $SERVER_API_KEY = 'AAAA12iRXek:APA91bHSmMEKt_Vi3RamfrBtk5R6p6hN5w0qsj5NotG5Xa5ttX1TudSPZLHBiUEXV4jKQ6CZBb1Cm_142nJroxyVU-3LRfQUYyz2ainfRFqIOdf1srFSU5RTsIgcI1LT1TtWPNf5TwXZ';
+            $doctors= Doctor::selection()->where('id',$request->doctorId)->first();
+            $patients= Patient::selection()->where('id',$request->patientId)->first();
+            // dd($patients);
+            $token_1 = $patients->device_token;
+            $name = $doctors->first_name;
+            $message='' ;
+            if(isset($request->lang)  && $request -> lang == 'en' ){
+                if($request->status=='confirmed'){
+                    $message= 'The date has been approved';
+                }elseif ($request->status=='cancelled') {
+                    $message= 'Appointment canceled';
+                }elseif ($request->status=='pending') {
+                    $message= 'wait an appointment';
+                }elseif ($request->status=='combledted') {
+                    $message= 'Appointment completed';
+                }elseif ($request->status=='absent') {
+                    $message= 'Not attendedt';
+                }
+            }else{
+                if($request->status=='confirmed'){
+                    $message= 'تم الموافقة على الموعد';
+                }elseif ($request->status=='cancelled') {
+                    $message= 'تم إلغاء الموعد';
+                }elseif ($request->status=='pending') {
+                    $message= 'wait an appointment';
+                }elseif ($request->status=='combledted') {
+                    $message= 'تم إكتمال الموعد';
+                }elseif ($request->status=='absent') {
+                    $message= 'لم يتم الحضور';
+                }
+            }
+            
+            $data = [
+                "registration_ids" => [
+                    $token_1
+                ],
+                "notification" => [
+                    "title" => 'Espitalia',
+                    "body" => $name ." ". $message,
+                    "sound"=> "default" // required for sound on ios
+                ],
+            ];
+
+            $dataString = json_encode($data);
+            $headers = [
+                'Authorization: key=' . $SERVER_API_KEY,
+                'Content-Type: application/json',
+            ];
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send');
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
+            $response = curl_exec($ch);
         if(isset($request->lang)  && $request -> lang == 'en' ){
             return $this -> returnSuccessMessage('Updated Successfully ');
         }else{

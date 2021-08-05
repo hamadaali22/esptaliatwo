@@ -136,44 +136,44 @@
 									<div class="col-12 col-sm-6">
 										<div class="form-group">
 											<label>الاسم الاول عربي</label>
-											<input type="text" name="first_name_ar" class="form-control">
+											<input type="text" name="first_name_ar" class="form-control" value="{{old('email')}}">
 										</div>
 									</div>
 									
 									<div class="col-12 col-sm-6">
 										<div class="form-group">
 											<label>الاسم الاول انجليزي</label>
-											<input type="text" name="first_name_en" class="form-control">
+											<input type="text" name="first_name_en" class="form-control" value="{{old('first_name_en')}}">
 										</div>
 									</div>
 									<div class="col-12 col-sm-6">
 										<div class="form-group">
 											<label>أسم العائلة عربي</label>
-											<input type="text" name="last_name_ar" class="form-control">
+											<input type="text" name="last_name_ar" class="form-control" value="{{old('last_name_ar')}}">
 										</div>
 									</div>
 									<div class="col-12 col-sm-6">
 										<div class="form-group">
 											<label>أسم العائلة انجليزي</label>
-											<input type="text" name="last_name_en" class="form-control">
+											<input type="text" name="last_name_en" class="form-control" value="{{old('last_name_en')}}">
 										</div>
 									</div>
 									<div class="col-12 col-sm-6">
 										<div class="form-group">
 											<label>البريد الالكتروني</label>
-											<input type="email" name="email" class="form-control">
+											<input type="email" name="email" class="form-control" value="{{old('email')}}">
 										</div>
 									</div>
 									<div class="col-12 col-sm-6">
 										<div class="form-group">
 											<label>كلمة المرور</label>
-											<input type="password" name="password" class="form-control">
+											<input type="password" name="password" class="form-control"  value="{{old('password')}}">
 										</div>
 									</div>
 									<div class="col-12 col-sm-6">
 										<div class="form-group">
 											<label>رقم الهاتف</label>
-											<input type="number" name="mobile" class="form-control">
+											<input type="number" name="mobile" class="form-control" value="{{old('mobile')}}">
 										</div>
 									</div>
 
@@ -182,21 +182,21 @@
 											<label>النوع</label>
 											<select class="form-control select" name="gender">
 												<option>اختر النوع</option>
-												<option value="Male">ذكر</option>
-												<option value="Female">أنثى</option>
+												<option value="Male" {{(old('gender')=="Male")? 'selected':''}}>ذكر</option>
+												<option value="Female" {{(old('gender')=='Female')? 'selected':''}}>أنثى</option>
 											</select>
 										</div>
 									</div>
 									<div class="col-12 col-sm-6">
 										<div class="form-group">
 											<label>تاريخ الميلاد</label>
-											<input type="date" name="dateOfBirth" class="form-control">
+											<input type="date" name="dateOfBirth" class="form-control" value="{{old('dateOfBirth')}}">
 										</div>
 									</div>
 									<div class="col-12 col-sm-12">
 										<div class="form-group">
 											<label>الصوره </label>
-											<input type="file" name="photo" class="form-control">
+											<input type="file" name="photo" class="form-control"  value="{{old('photo')}}">
 											<input type="hidden" name="url"  value="profile_image.png">
 										</div>
 									</div>

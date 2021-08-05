@@ -25,9 +25,13 @@ class UserNewNotification extends Notification
     public function toDatabase()
     {
         return[
-            'id'=>    $this->post->id,
-            'title'=> $this->post->name,
-            'data'=>  $this->post->created_at
+            // 'id'=>    $this->post->id,
+            // 'title'=> $this->post->name,
+            // 'data'=>  $this->post->created_at
+
+            'name'=> $this->post->name,
+            'message'=>$this->post->name,
+
         ];
     }   
     // public function toMail($notifiable)

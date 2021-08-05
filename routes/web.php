@@ -19,7 +19,7 @@ use App\Events\MessageSent;
 use App\User;
 use App\Post;
 use App\Patient;
-use App\Notification;
+use App\Doctor;
 
 Route::get('/user/activation/{token}', 'UserController@userActivation');
 Route::get('/doctor/activation/{token}', 'UserController@doctorActivation');
@@ -44,14 +44,14 @@ Route::get('/postnot', function () {
 
 Route::get('/usernot', function () {
     
-    $user = User::find(1);
-    Notification::send($user, new \App\Notifications\UserNewNotification($user));
+    $user = Doctor::find(98);
+    Notification::send($user, new \App\Notifications\DoctorNewNotification($user));
 
 });
 
 
 Route::get('/getusernot', function () {
-    $user = Patient::find(15);
+    $user = Doctor::find(207);
     $notf=[];
     foreach ($user->notifications as $not) {
         // $not->notifications;
@@ -90,7 +90,6 @@ Route::get('/getusernot', function () {
     // $user->notifications()->delete();
     
 });
-
 
 
 // Route::resource('category','CategoryController');
@@ -158,6 +157,10 @@ Route::get('causes_cat/{id}', 'CauseController@index');
       
         Route::resource('/','DashBoardController');
         Route::resource('appointments','AppointmentController');
+        Route::get('doctornotifaction', 'AppointmentController@doctornotifaction')->name('doctornotifaction');
+        Route::post('doctor_notifaction', 'AppointmentController@doctor_Notifaction')->name('doctor_notifaction');
+        Route::get('patientnotifaction', 'AppointmentController@patientnotifaction')->name('patientnotifaction');
+        Route::post('patient_notifaction', 'AppointmentController@patient_notifaction')->name('patient_notifaction');
         Route::resource('doctors','DoctorController');
         Route::resource('reviews','ReviewsController');
         
@@ -219,6 +222,8 @@ Route::get('causes_cat/{id}', 'CauseController@index');
 ###### start  patient #########
         Route::get('patient-profile/{patientId}/', 'PatientController@profile');
         Route::get('patients/update/status', 'PatientController@updateStatus')->name('patients.update.status');
+        Route::post('patients/delet/apointment', 'PatientController@patientDeletApointment')->name('patients.delet.apointment');
+
         Route::get('getdoctor/{id}', 'PatientController@getDoctor');
         Route::get('getoffer/{id}', 'PatientController@getOffer');
         Route::get('getservice/{id}', 'PatientController@getService');
@@ -243,9 +248,9 @@ Route::get('causes_cat/{id}', 'CauseController@index');
        
         ###################### user-status ##############################
         Route::post('users/status/{id}', 'UsersController@updateStatus')->name('users/status/{id}');
-        Route::get('settings', 'ProfileController@settings');
         Route::post('settings/update','ProfileController@updateSettings');
-
+        Route::post('settings/contactdata','ProfileController@updateContactData');
+        Route::post('settings/privacy','ProfileController@updatePrivacy');
         Route::get('settings', 'ProfileController@settings');
         Route::get('about', 'ProfileController@about');
         Route::get('contact', 'ProfileController@contact');
